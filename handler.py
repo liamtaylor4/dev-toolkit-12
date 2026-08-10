@@ -1,33 +1,34 @@
 import json
 
-class CustomError(Exception):
+class InputError(Exception):
     pass
 
-class DataHandler:
-    def __init__(self, data: str):
-        self.data = data
+def validate_input(data):
+    if not isinstance(data, dict):
+        raise InputError('Input must be a dictionary')
+    required_keys = ['name', 'age']
+    for key in required_keys:
+        if key not in data:
+            raise InputError(f'Missing required key: {key}')
+    if not isinstance(data['age'], int) or data['age'] < 0:
+        raise InputError('Age must be a non-negative integer')
 
-    def process_data(self) -> dict:
+def process_data(data):
+    validate_input(data)
+    return {'status': 'success', 'processed': data}
+
+def main_loop():
+    inputs = [
+        {'name': 'Alice', 'age': 30},
+        {'name': 'Bob', 'age': -1},
+        {'name': 'Charlie'}
+    ]
+    for input_data in inputs:
         try:
-            data_dict = json.loads(self.data)
-            self.validate_data(data_dict)
-            return data_dict
-        except json.JSONDecodeError:
-            raise CustomError('Invalid JSON format')
-        except Exception as e:
-            raise CustomError(f'An error occurred: {str(e)}')
+            result = process_data(input_data)
+            print(json.dumps(result))
+        except InputError as e:
+            print(f'Input Error: {e}')
 
-    def validate_data(self, data: dict) -> None:
-        if not isinstance(data, dict):
-            raise CustomError('Data must be a dictionary')
-        if 'required_key' not in data:
-            raise CustomError('Missing required key in data')
-
-# Example usage
 if __name__ == '__main__':
-    handler = DataHandler('{"required_key": "value"}')
-    try:
-        processed_data = handler.process_data()
-        print(processed_data)
-    except CustomError as e:
-        print(e)
+    main_loop()
