@@ -1,27 +1,32 @@
 import json
-import os
 
 class ConfigLoader:
-    def __init__(self, default_config):
-        self.default_config = default_config
-        self.config = self.load_config()
+    def __init__(self, defaults):
+        self.defaults = defaults
+        self.config = defaults.copy()
 
-    def load_config(self):
-        config_path = os.getenv('CONFIG_PATH', 'config.json')
-        if os.path.exists(config_path):
-            with open(config_path, 'r') as file:
-                return {**self.default_config, **json.load(file)}
-        return self.default_config
+    def load(self, filepath):
+        try:
+            with open(filepath, 'r') as file:
+                user_config = json.load(file)
+                self.config.update(user_config)
+        except FileNotFoundError:
+            pass
+        except json.JSONDecodeError:
+            raise ValueError('Invalid JSON file')
 
     def get(self, key, default=None):
         return self.config.get(key, default)
 
+    def set(self, key, value):
+        self.config[key] = value
+
+    def save(self, filepath):
+        with open(filepath, 'w') as file:
+            json.dump(self.config, file, indent=4)
+
 if __name__ == '__main__':
-    default_config = {
-        'game_name': 'MyGame',
-        'version': '1.0',
-        'window_size': [800, 600],
-        'fullscreen': False
-    }
-    config_loader = ConfigLoader(default_config)
-    print(config_loader.get('game_name'))
+    defaults = {'volume': 70, 'resolution': '1920x1080', 'fullscreen': True}
+    config_loader = ConfigLoader(defaults)
+    config_loader.load('config.json')
+    print(config_loader.get('volume'))
