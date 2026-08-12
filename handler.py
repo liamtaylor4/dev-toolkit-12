@@ -1,34 +1,30 @@
-import json
+from typing import Any, Dict
 
-class InputError(Exception):
-    pass
+class GameHandler:
+    def __init__(self, game_data: Dict[str, Any]) -> None:
+        self.game_data = game_data
 
-def validate_input(data):
-    if not isinstance(data, dict):
-        raise InputError('Input must be a dictionary')
-    required_keys = ['name', 'age']
-    for key in required_keys:
-        if key not in data:
-            raise InputError(f'Missing required key: {key}')
-    if not isinstance(data['age'], int) or data['age'] < 0:
-        raise InputError('Age must be a non-negative integer')
+    def start_game(self) -> str:
+        return "Game started!"
 
-def process_data(data):
-    validate_input(data)
-    return {'status': 'success', 'processed': data}
+    def end_game(self) -> str:
+        return "Game ended!"
 
-def main_loop():
-    inputs = [
-        {'name': 'Alice', 'age': 30},
-        {'name': 'Bob', 'age': -1},
-        {'name': 'Charlie'}
-    ]
-    for input_data in inputs:
-        try:
-            result = process_data(input_data)
-            print(json.dumps(result))
-        except InputError as e:
-            print(f'Input Error: {e}')
+    def get_score(self) -> int:
+        return self.game_data.get('score', 0)
 
-if __name__ == '__main__':
-    main_loop()
+    def update_score(self, score: int) -> None:
+        self.game_data['score'] = score
+
+    def reset_game(self) -> None:
+        self.game_data.clear()
+        self.game_data['score'] = 0
+
+    def is_game_active(self) -> bool:
+        return 'active' in self.game_data and self.game_data['active']
+
+    def toggle_game_state(self) -> None:
+        if 'active' in self.game_data:
+            self.game_data['active'] = not self.game_data['active']
+        else:
+            self.game_data['active'] = True
