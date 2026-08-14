@@ -1,27 +1,29 @@
-from typing import Any, Dict, List
+import re
 
-def validate_integer(value: Any) -> bool:
-    """Validates if the provided value is an integer."""
-    return isinstance(value, int)
+class ValidationError(Exception):
+    pass
 
-
-def validate_string(value: Any) -> bool:
-    """Validates if the provided value is a string."""
-    return isinstance(value, str)
-
-
-def validate_range(value: int, min_value: int, max_value: int) -> bool:
-    """Validates if the integer value is within the specified range."""
-    return min_value <= value <= max_value
+def validate_username(username):
+    if not isinstance(username, str):
+        raise ValidationError('Username must be a string.')
+    if not (3 <= len(username) <= 20):
+        raise ValidationError('Username must be between 3 and 20 characters.')
+    if not re.match('^[a-zA-Z0-9_]+$', username):
+        raise ValidationError('Username can only contain alphanumeric characters and underscores.')
+    return True
 
 
-def validate_list_of_integers(values: List[Any]) -> bool:
-    """Validates if all elements in the list are integers."""
-    return all(validate_integer(val) for val in values)
+def validate_email(email):
+    if not isinstance(email, str):
+        raise ValidationError('Email must be a string.')
+    if not re.match(r'^[\w-.]+@[\w-]+\.[a-zA-Z]{2,}$', email):
+        raise ValidationError('Invalid email format.')
+    return True
 
 
-def validate_config(config: Dict[str, Any]) -> bool:
-    """Validates the configuration dictionary for required types."""
-    return (validate_integer(config.get('max_players')) and 
-            validate_string(config.get('game_mode')) and 
-            validate_list_of_integers(config.get('player_scores', [])))
+def validate_age(age):
+    if not isinstance(age, int):
+        raise ValidationError('Age must be an integer.')
+    if not (0 <= age <= 120):
+        raise ValidationError('Age must be between 0 and 120.')
+    return True
