@@ -1,26 +1,32 @@
 class GameError(Exception):
-    """Base class for exceptions in the game."
     pass
 
 class PlayerError(GameError):
-    """Exception raised for errors related to the player."
-    def __init__(self, message: str) -> None:
+    def __init__(self, message):
         super().__init__(message)
 
 class LevelError(GameError):
-    """Exception raised for errors related to game levels."
-    def __init__(self, level: int, message: str) -> None:
+    def __init__(self, level, message):
         self.level = level
         super().__init__(message)
 
-class ItemError(GameError):
-    """Exception raised for errors related to game items."
-    def __init__(self, item_name: str, message: str) -> None:
-        self.item_name = item_name
+class InventoryError(GameError):
+    def __init__(self, item, message):
+        self.item = item
         super().__init__(message)
 
 class NetworkError(GameError):
-    """Exception raised for network-related errors."
-    def __init__(self, status_code: int, message: str) -> None:
-        self.status_code = status_code
+    def __init__(self, message):
+        super().__init__(message)
+        self.retry_count = 0
+
+    def increment_retry(self):
+        self.retry_count += 1
+
+    def reset_retry(self):
+        self.retry_count = 0
+
+class ResourceError(GameError):
+    def __init__(self, resource, message):
+        self.resource = resource
         super().__init__(message)
