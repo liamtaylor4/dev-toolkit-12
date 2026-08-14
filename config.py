@@ -1,32 +1,28 @@
 import json
+import os
 
 class ConfigLoader:
-    def __init__(self, defaults):
-        self.defaults = defaults
-        self.config = defaults.copy()
+    def __init__(self, default_config_path, custom_config_path=None):
+        self.default_config_path = default_config_path
+        self.custom_config_path = custom_config_path
+        self.config = self.load_config()
 
-    def load(self, filepath):
-        try:
-            with open(filepath, 'r') as file:
-                user_config = json.load(file)
-                self.config.update(user_config)
-        except FileNotFoundError:
-            pass
-        except json.JSONDecodeError:
-            raise ValueError('Invalid JSON file')
+    def load_config(self):
+        config = self.load_json(self.default_config_path)
+        if self.custom_config_path:
+            custom_config = self.load_json(self.custom_config_path)
+            config.update(custom_config)
+        return config
+
+    def load_json(self, path):
+        if not os.path.exists(path):
+            return {}
+        with open(path, 'r') as file:
+            return json.load(file)
 
     def get(self, key, default=None):
         return self.config.get(key, default)
 
-    def set(self, key, value):
-        self.config[key] = value
-
-    def save(self, filepath):
-        with open(filepath, 'w') as file:
-            json.dump(self.config, file, indent=4)
-
 if __name__ == '__main__':
-    defaults = {'volume': 70, 'resolution': '1920x1080', 'fullscreen': True}
-    config_loader = ConfigLoader(defaults)
-    config_loader.load('config.json')
-    print(config_loader.get('volume'))
+    config_loader = ConfigLoader('default_config.json', 'custom_config.json')
+    print(config_loader.get('some_key', 'default_value'))
