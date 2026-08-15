@@ -1,25 +1,31 @@
-import time
+import json
 
-def time_execution(func):
-    def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        result = func(*args, **kwargs)
-        end = time.perf_counter()
-        print(f'Execution time for {func.__name__}: {end - start:.4f} seconds')
-        return result
-    return wrapper
+def load_game_data(file_path):
+    with open(file_path, 'r') as file:
+        return json.load(file)
 
-@time_execution
-def expensive_computation(n):
-    total = 0
-    for i in range(n):
-        total += sum(j * j for j in range(1000))
-    return total
 
-@time_execution
-def process_data(data):
-    return [expensive_computation(item) for item in data]
+def save_game_data(file_path, data):
+    with open(file_path, 'w') as file:
+        json.dump(data, file, indent=4)
 
-if __name__ == '__main__':
-    result = process_data(range(10))
-    print(result)
+
+def update_game_data(file_path, new_data):
+    data = load_game_data(file_path)
+    data.update(new_data)
+    save_game_data(file_path, data)
+
+
+def get_player_score(data, player_id):
+    return data.get('players', {}).get(player_id, {}).get('score', 0)
+
+
+def set_player_score(data, player_id, score):
+    if 'players' not in data:
+        data['players'] = {}
+    data['players'][player_id] = data['players'].get(player_id, {})
+    data['players'][player_id]['score'] = score
+
+
+def initialize_game_data():
+    return {'players': {}, 'settings': {}}
