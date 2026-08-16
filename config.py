@@ -1,33 +1,22 @@
-import json
-import os
+from typing import Dict, Any
 
-DEFAULTS = {
-    'setting1': 'default_value1',
-    'setting2': 10,
-    'setting3': True
-}
+class Config:
+    """Handles configuration settings for the application."""
+    def __init__(self, settings: Dict[str, Any]) -> None:
+        self.settings = settings
 
-class ConfigLoader:
-    def __init__(self, config_file):
-        self.config_file = config_file
-        self.config = self.load_config()
+    def get(self, key: str) -> Any:
+        """Retrieve a setting by key."""
+        return self.settings.get(key)
 
-    def load_config(self):
-        if os.path.exists(self.config_file):
-            with open(self.config_file, 'r') as file:
-                try:
-                    config = json.load(file)
-                except json.JSONDecodeError:
-                    return DEFAULTS
-            return {**DEFAULTS, **config}
-        return DEFAULTS
+    def set(self, key: str, value: Any) -> None:
+        """Set a configuration value."""
+        self.settings[key] = value
 
-    def get(self, key):
-        return self.config.get(key, DEFAULTS.get(key))
+    def update(self, new_settings: Dict[str, Any]) -> None:
+        """Update multiple settings at once."""
+        self.settings.update(new_settings)
 
-    def set(self, key, value):
-        self.config[key] = value
-
-    def save(self):
-        with open(self.config_file, 'w') as file:
-            json.dump(self.config, file, indent=4)
+    def all_settings(self) -> Dict[str, Any]:
+        """Return all settings as a dictionary."""
+        return self.settings
