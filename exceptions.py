@@ -1,32 +1,28 @@
 class GameError(Exception):
-    pass
+    """Base class for exceptions in the game toolkit."""
 
-class PlayerError(GameError):
-    def __init__(self, message):
+class InvalidInputError(GameError):
+    """Exception raised for invalid input arguments."""
+
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
-class LevelError(GameError):
-    def __init__(self, level, message):
-        self.level = level
+class ResourceNotFoundError(GameError):
+    """Exception raised when a required resource is not found."""
+
+    def __init__(self, resource_name: str) -> None:
+        message = f'Resource not found: {resource_name}'
         super().__init__(message)
 
-class InventoryError(GameError):
-    def __init__(self, item, message):
-        self.item = item
-        super().__init__(message)
+class GameOverError(GameError):
+    """Exception raised when the game is over."""
 
-class NetworkError(GameError):
-    def __init__(self, message):
-        super().__init__(message)
-        self.retry_count = 0
+    def __init__(self) -> None:
+        super().__init__('The game is over.')
 
-    def increment_retry(self):
-        self.retry_count += 1
+class ConnectionError(GameError):
+    """Exception raised for connection issues."""
 
-    def reset_retry(self):
-        self.retry_count = 0
-
-class ResourceError(GameError):
-    def __init__(self, resource, message):
-        self.resource = resource
+    def __init__(self, host: str, port: int) -> None:
+        message = f'Connection failed to {host}:{port}'
         super().__init__(message)
