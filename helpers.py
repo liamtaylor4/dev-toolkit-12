@@ -1,31 +1,25 @@
-import json
+import random
+import math
 
-def load_game_data(file_path):
-    with open(file_path, 'r') as file:
-        return json.load(file)
-
-
-def save_game_data(file_path, data):
-    with open(file_path, 'w') as file:
-        json.dump(data, file, indent=4)
+def roll_dice(sides=6, times=1):
+    return [random.randint(1, sides) for _ in range(times)]
 
 
-def update_game_data(file_path, new_data):
-    data = load_game_data(file_path)
-    data.update(new_data)
-    save_game_data(file_path, data)
+def calculate_distance(point1, point2):
+    return math.sqrt((point2[0] - point1[0]) ** 2 + (point2[1] - point1[1]) ** 2)
 
 
-def get_player_score(data, player_id):
-    return data.get('players', {}).get(player_id, {}).get('score', 0)
+def random_item(items):
+    return random.choice(items)
 
 
-def set_player_score(data, player_id, score):
-    if 'players' not in data:
-        data['players'] = {}
-    data['players'][player_id] = data['players'].get(player_id, {})
-    data['players'][player_id]['score'] = score
+def clamp(value, min_value, max_value):
+    return max(min_value, min(value, max_value))
 
 
-def initialize_game_data():
-    return {'players': {}, 'settings': {}}
+def is_power_of_two(n):
+    return n and (n & (n - 1)) == 0
+
+
+def lerp(start, end, t):
+    return start + (end - start) * t
