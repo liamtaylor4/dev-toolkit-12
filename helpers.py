@@ -1,25 +1,28 @@
-import random
-import math
-
-def roll_dice(sides=6, times=1):
-    return [random.randint(1, sides) for _ in range(times)]
-
-
-def calculate_distance(point1, point2):
-    return math.sqrt((point2[0] - point1[0]) ** 2 + (point2[1] - point1[1]) ** 2)
-
-
-def random_item(items):
-    return random.choice(items)
-
-
-def clamp(value, min_value, max_value):
-    return max(min_value, min(value, max_value))
-
-
-def is_power_of_two(n):
-    return n and (n & (n - 1)) == 0
-
+def clamp(value, minimum, maximum):
+    return max(minimum, min(value, maximum))
 
 def lerp(start, end, t):
     return start + (end - start) * t
+
+import random
+
+def random_choice(choices):
+    return random.choice(choices)
+
+def generate_random_int(min_value, max_value):
+    return random.randint(min_value, max_value)
+
+def calculate_distance(point1, point2):
+    return ((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2) ** 0.5
+
+def normalize(vector):
+    length = calculate_distance((0, 0), vector)
+    if length == 0:
+        return (0, 0)
+    return (vector[0] / length, vector[1] / length)
+
+def format_time(seconds):
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    return f'{int(hours):02}:{int(minutes):02}:{int(seconds):02}'
+
