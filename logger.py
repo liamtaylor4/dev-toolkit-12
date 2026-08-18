@@ -9,8 +9,7 @@ def setup_logger(name, log_file, level=logging.INFO):
     logger = logging.getLogger(name)
     logger.setLevel(level)
     logger.addHandler(handler)
+
     return logger
 
-if __name__ == '__main__':
-    logger = setup_logger('game_logger', 'game.log')
-    logger.info('Logger setup complete.')
+logger = setup_logger('game_logger', 'game.log')
