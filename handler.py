@@ -1,30 +1,19 @@
+import json
 from typing import Any, Dict
 
-class GameHandler:
-    def __init__(self, game_data: Dict[str, Any]) -> None:
-        self.game_data = game_data
+class GameDataHandler:
+    def __init__(self, filename: str) -> None:
+        self.filename = filename
 
-    def start_game(self) -> str:
-        return "Game started!"
+    def load_data(self) -> Dict[str, Any]:
+        with open(self.filename, 'r') as file:
+            return json.load(file)
 
-    def end_game(self) -> str:
-        return "Game ended!"
+    def save_data(self, data: Dict[str, Any]) -> None:
+        with open(self.filename, 'w') as file:
+            json.dump(data, file, indent=4)
 
-    def get_score(self) -> int:
-        return self.game_data.get('score', 0)
-
-    def update_score(self, score: int) -> None:
-        self.game_data['score'] = score
-
-    def reset_game(self) -> None:
-        self.game_data.clear()
-        self.game_data['score'] = 0
-
-    def is_game_active(self) -> bool:
-        return 'active' in self.game_data and self.game_data['active']
-
-    def toggle_game_state(self) -> None:
-        if 'active' in self.game_data:
-            self.game_data['active'] = not self.game_data['active']
-        else:
-            self.game_data['active'] = True
+    def update_data(self, key: str, value: Any) -> None:
+        data = self.load_data()
+        data[key] = value
+        self.save_data(data)
